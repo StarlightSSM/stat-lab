@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0">
+<iframe id="f" style="width:1440px;height:900px;border:0"></iframe><pre id="out">PENDING</pre>
+<script>
+const q = new URLSearchParams(location.search), f = document.getElementById('f'), errs = [];
+f.style.width = (q.get('w') || 1440) + 'px'; f.style.height = (q.get('h') || 900) + 'px';
+f.src = '/' + (q.get('u') || '');
+f.addEventListener('load', () => { const w = f.contentWindow; w.addEventListener('error', (e) => errs.push('ERR ' + e.message + ' @' + (e.filename||'').split('/').pop() + ':' + e.lineno)); w.addEventListener('unhandledrejection', (e) => errs.push('REJ ' + (e.reason && e.reason.stack || e.reason))); const ce = w.console.error; w.console.error = (...a) => { errs.push('CE ' + a.map(x => x && x.stack || String(x)).join(' ')); ce.apply(w.console, a); }; });
+const steps = (q.get('do') || '').split(';').filter(Boolean);
+let t = 0; const at = (ms, fn) => setTimeout(fn, ms);
+steps.forEach((s) => { const [ms, code] = s.split('|'); at(+ms, () => { try { new Function('B', 'w', code)(f.contentWindow.__book, f.contentWindow); } catch (e) { errs.push('STEP ' + e.message); } }); });
+at(+(q.get('t') || 8000), () => { const B = f.contentWindow.__book; document.getElementById('out').textContent = 'STATE ' + JSON.stringify(B ? { cur: B.cur, busy: B.busy, mode: B.mode, figs: B.figs.count, log: f.contentWindow.__log, frames: f.contentWindow.__frames, now: f.contentWindow.__now, pn: Math.round(f.contentWindow.performance.now()) } : null) + '\n' + (errs.join('\n') || 'NO_ERRORS'); });
+</script>

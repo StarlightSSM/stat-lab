@@ -569,6 +569,8 @@
     let rw = innerWidth, rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if (Math.abs(innerWidth - rw) > 40 && current) { rw = innerWidth; const m = current.mod; const keepP = Object.assign({}, current.ctx.p); unmount(); renderModule(m, keepP); } }, 250); });
     route();
   };
+  /* internals reused by the 3D book (book.html) */
+  Object.assign(Lab, { _makeCtx: makeCtx, _buildControls: buildControls, _toolsHtml: toolsHtml, _resourceList: resourceList });
   Lab.refresh = () => { if (!current) route(); };
 
   window.Lab = Lab;

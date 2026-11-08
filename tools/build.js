@@ -1,9 +1,19 @@
-// Inject <script> tags for every js/m/*.js into index.html (sorted by subject order then filename)
+// Inject <script> tags for every js/m/*.js (modules) into index.html and book.html,
+// and every js/fig/*.js (3D pop-up figures) into book.html.
 const fs = require('fs'), path = require('path');
 const root = path.join(__dirname, '..');
-const files = fs.readdirSync(path.join(root, 'js/m')).filter(f => f.endsWith('.js')).sort();
-const tags = files.map(f => `<script src="js/m/${f}"></script>`).join('\n');
-let html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-html = html.replace(/<!-- MODULES:START -->[\s\S]*<!-- MODULES:END -->/, `<!-- MODULES:START -->\n${tags}\n<!-- MODULES:END -->`);
-fs.writeFileSync(path.join(root, 'index.html'), html);
-console.log(files.length + ' modules');
+const list = (dir) => fs.existsSync(path.join(root, dir)) ? fs.readdirSync(path.join(root, dir)).filter((f) => f.endsWith('.js')).sort() : [];
+const mods = list('js/m'), figs = list('js/fig');
+const tags = (dir, files) => files.map((f) => `<script src="${dir}/${f}"></script>`).join('\n');
+function inject(file, marker, body) {
+  const p = path.join(root, file); if (!fs.existsSync(p)) return;
+  let html = fs.readFileSync(p, 'utf8');
+  const re = new RegExp(`<!-- ${marker}:START -->[\\s\\S]*<!-- ${marker}:END -->`);
+  if (!re.test(html)) return;
+  html = html.replace(re, `<!-- ${marker}:START -->\n${body}\n<!-- ${marker}:END -->`);
+  fs.writeFileSync(p, html);
+}
+inject('index.html', 'MODULES', tags('js/m', mods));
+inject('book.html', 'MODULES', tags('js/m', mods));
+inject('book.html', 'FIGS', tags('js/fig', figs));
+console.log(`${mods.length} modules, ${figs.length} figures`);

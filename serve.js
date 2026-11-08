@@ -1,4 +1,4 @@
-// 로컬 서버: node serve.js  →  http://localhost:8800
+// 로컬 서버: node serve.js  →  http://localhost:8800 (3D 책) · /classic (평면 사이트)
 // index.html은 Artifact 형식(문서 뼈대 없음)이라, 로컬에서는 이 서버가 <!doctype html> 뼈대를 씌워서 보냅니다.
 const http = require('http'), fs = require('fs'), path = require('path');
 const ROOT = __dirname, PORT = Number(process.env.PORT) || 8800;
@@ -20,7 +20,8 @@ ${body}
 
 http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split('?')[0]);
-  if (p === '/' || p === '') p = '/index.html';
+  if (p === '/' || p === '') p = '/book.html';            // 3D 책
+  if (p === '/classic' || p === '/classic/') p = '/index.html'; // 평면 사이트
   const file = path.normalize(path.join(ROOT, p));
   if (!file.startsWith(ROOT) || file.includes(`${path.sep}.preview`) ) { res.writeHead(403); return res.end('forbidden'); }
   fs.readFile(file, 'utf8', (err, data) => {

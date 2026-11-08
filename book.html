@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>연구통계 실험실</title>
+<meta name="description" content="응용확률및통계·행동연구방법론·구조방정식·SPSS·R·MIS를 직접 조작하며 읽는 3D 통계 교과서">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@500;700&display=swap">
+<link rel="stylesheet" href="css/lab.css">
+<link rel="stylesheet" href="css/book.css">
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
+</head>
+<body class="bk">
+<div id="world" class="bk-world"></div>
+<div id="stash" aria-hidden="true"></div>
+
+<section id="intro" class="bk-intro" aria-label="시작">
+  <div class="bk-intro-card">
+    <p class="bk-kicker">6개 과목 · 48개 실험 · 공개 강의자료 73건</p>
+    <h1>연구통계 실험실</h1>
+    <p>움직이는 그림이 들어 있는 통계 교과서입니다. 책을 펼치고, 쪽마다 있는 슬라이더를 직접 움직여 보세요.</p>
+    <div class="bk-intro-cta"><button id="intro-open" class="btn btn-primary" type="button">책 펼치기</button><a class="btn btn-ghost" href="classic">평면 사이트로 보기</a></div>
+    <p class="bk-hint">← → 키로 책장을 넘깁니다</p>
+  </div>
+</section>
+
+<nav id="bar" class="bk-bar" aria-label="책장 넘기기">
+  <button id="b-toc" class="ib" type="button" aria-label="차례 열기" title="차례"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+  <button id="b-prev" class="ib" type="button" aria-label="이전 쪽" title="이전 쪽 (←)"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+  <button id="b-label" class="bk-label" type="button" title="차례 열기"><span class="no"></span><span class="t"></span></button>
+  <button id="b-next" class="ib" type="button" aria-label="다음 쪽" title="다음 쪽 (→)"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button id="b-view" class="ib" type="button" aria-label="한 쪽씩 크게 보기" title="펼침면 / 한 쪽"><svg class="i-spread" viewBox="0 0 24 24"><path d="M3 5.5c3-1 6-1 9 1 3-2 6-2 9-1v13c-3-1-6-1-9 1-3-2-6-2-9-1z"/><path d="M12 6.5v13"/></svg><svg class="i-page" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5"/></svg></button>
+  <button id="b-orbit" class="ib" type="button" aria-pressed="false" aria-label="책상 둘러보기" title="둘러보기"><svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg></button>
+  <button id="b-night" class="ib" type="button" aria-pressed="false" aria-label="밤 조명" title="밤 조명"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></button>
+  <button id="b-sound" class="ib" type="button" aria-pressed="false" aria-label="책장 소리" title="책장 소리"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="w" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="x" d="M16 9l5 6M21 9l-5 6"/></svg></button>
+  <a id="b-flat" class="ib" href="classic" aria-label="평면 사이트로 보기" title="평면 보기"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg></a>
+</nav>
+
+<div id="toc-scrim" class="bk-scrim"></div>
+<aside id="toc" class="bk-toc" hidden aria-label="차례">
+  <header><b>차례</b><button id="toc-x" type="button" class="btn-reset">닫기</button></header>
+  <input id="toc-q" type="search" placeholder="실험 찾기 (예: 회귀, 신뢰도, AMOS)" aria-label="실험 찾기">
+  <div id="toc-list"></div>
+</aside>
+<div id="toast" class="bk-toast" role="status" hidden></div>
+<div id="nogl" class="bk-nogl" hidden><div><h1>3D 화면을 열 수 없습니다</h1><p>이 브라우저에서 WebGL을 쓸 수 없어 책 모양으로 보여 드리지 못했습니다. 같은 내용을 평면 사이트에서 볼 수 있습니다.</p><a class="btn btn-primary" href="classic">평면 사이트로 보기</a></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/core.js"></script>
+<!-- MODULES:START -->
+<script src="js/m/anova.js"></script>
+<script src="js/m/chisq.js"></script>
+<script src="js/m/ci.js"></script>
+<script src="js/m/clt.js"></script>
+<script src="js/m/corr.js"></script>
+<script src="js/m/dist-binomial.js"></script>
+<script src="js/m/dist-normal.js"></script>
+<script src="js/m/dist-poisson.js"></script>
+<script src="js/m/hyp-test.js"></script>
+<script src="js/m/logistic.js"></script>
+<script src="js/m/mis-abtest.js"></script>
+<script src="js/m/mis-bass.js"></script>
+<script src="js/m/mis-bullwhip.js"></script>
+<script src="js/m/mis-network.js"></script>
+<script src="js/m/mis-npv.js"></script>
+<script src="js/m/mis-queue.js"></script>
+<script src="js/m/mis-tam.js"></script>
+<script src="js/m/power.js"></script>
+<script src="js/m/prob-bayes.js"></script>
+<script src="js/m/prob-lln.js"></script>
+<script src="js/m/r-basics.js"></script>
+<script src="js/m/r-dplyr.js"></script>
+<script src="js/m/r-ggplot.js"></script>
+<script src="js/m/r-lavaan.js"></script>
+<script src="js/m/r-lm.js"></script>
+<script src="js/m/r-sim.js"></script>
+<script src="js/m/reg-multi.js"></script>
+<script src="js/m/reg-simple.js"></script>
+<script src="js/m/rm-attenuation.js"></script>
+<script src="js/m/rm-experiment.js"></script>
+<script src="js/m/rm-mediation.js"></script>
+<script src="js/m/rm-moderation.js"></script>
+<script src="js/m/rm-reliability.js"></script>
+<script src="js/m/rm-sampling.js"></script>
+<script src="js/m/rm-simpson.js"></script>
+<script src="js/m/rm-validity.js"></script>
+<script src="js/m/sem-bootstrap.js"></script>
+<script src="js/m/sem-cfa.js"></script>
+<script src="js/m/sem-fit.js"></script>
+<script src="js/m/sem-identification.js"></script>
+<script src="js/m/sem-multigroup.js"></script>
+<script src="js/m/sem-path.js"></script>
+<script src="js/m/spss-crosstab.js"></script>
+<script src="js/m/spss-descriptives.js"></script>
+<script src="js/m/spss-efa.js"></script>
+<script src="js/m/spss-regression.js"></script>
+<script src="js/m/spss-ttest.js"></script>
+<script src="js/m/ttest.js"></script>
+<!-- MODULES:END -->
+<script src="js/resources.js"></script>
+<script>window.BookFig = { defs: {}, add(id, def) { this.defs[id] = def; return def; }, get(id) { return this.defs[id]; } };</script>
+<!-- FIGS:START -->
+<script src="js/fig/_path3d.js"></script>
+<script src="js/fig/anova.js"></script>
+<script src="js/fig/clt.js"></script>
+<script src="js/fig/corr.js"></script>
+<script src="js/fig/dist-normal.js"></script>
+<script src="js/fig/galton.js"></script>
+<script src="js/fig/hyp-test.js"></script>
+<script src="js/fig/logistic.js"></script>
+<script src="js/fig/mis-bass.js"></script>
+<script src="js/fig/mis-bullwhip.js"></script>
+<script src="js/fig/mis-network.js"></script>
+<script src="js/fig/mis-queue.js"></script>
+<script src="js/fig/prob-bayes.js"></script>
+<script src="js/fig/reg-multi.js"></script>
+<script src="js/fig/rm-mediation.js"></script>
+<script src="js/fig/rm-moderation.js"></script>
+<script src="js/fig/rm-sampling.js"></script>
+<script src="js/fig/rm-simpson.js"></script>
+<script src="js/fig/sem-cfa.js"></script>
+<script src="js/fig/sem-path.js"></script>
+<script src="js/fig/spss-crosstab.js"></script>
+<script src="js/fig/spss-efa.js"></script>
+<!-- FIGS:END -->
+<script type="module" src="js/book/main.js"></script>
+</body>
+</html>
